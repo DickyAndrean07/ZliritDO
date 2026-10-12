@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="asset/zliritdo-wordmark.svg" alt="ZliritDo Logo" width="380" />
+  <img src="asset/zliritdo-logo-icon.svg" alt="ZliritDo Icon" width="100" />
+  <br />
+  <img src="asset/zliritdo-wordmark.svg" alt="ZliritDo Logo" width="340" />
 </p>
 
 <p align="center">
