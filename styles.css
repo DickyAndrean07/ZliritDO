@@ -109,9 +109,25 @@ button {
 .app-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-decoration: none;
   user-select: none;
+  flex-shrink: 0;
+}
+
+.brand-icon-img {
+  height: 36px;
+  width: auto;
+  border-radius: 10px;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-wordmark-img {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-icon {
@@ -1287,6 +1303,12 @@ button {
     width: 32px;
     height: 32px;
     font-size: 17px;
+  }
+  .brand-icon-img {
+    height: 28px;
+  }
+  .brand-wordmark-img {
+    height: 18px;
   }
 
   /* Fix 2: Banner & Add Button Stacking */
