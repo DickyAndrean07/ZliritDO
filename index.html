@@ -2,11 +2,14 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#07182c" />
   <meta name="description" content="ZliritDo — Daily Discipline & Time-Targeted Focus Tracker. Aplikasi produktivitas harian siap pakai untuk membangun kebiasaan disiplin waktu." />
   <meta name="author" content="Zlirit" />
   <title>ZliritDo — Daily Discipline &amp; Focus Tracker</title>
+  
+  <link rel="icon" type="image/svg+xml" href="asset/zliritdo-logo-icon.svg" />
+  <link rel="apple-touch-icon" href="asset/zliritdo-logo-icon.png" />
   
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,10 +111,10 @@
           <article class="card">
             <div class="card-header">
               <div class="card-title">
-                Progres Komitmen Hari Ini
+                Progres Komitmen
                 <span class="tag" id="overviewTag">In Progress</span>
               </div>
-              <small id="overviewPercentText">0% tercapai</small>
+              <small id="overviewPercentText">0% selesai</small>
             </div>
             <div class="overall-layout">
               <div class="overall-ring" id="overallRing" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -137,7 +140,7 @@
                 Target Aktivitas
                 <span class="tag" id="goalCountBadge">2 Aktivitas</span>
               </div>
-              <small>Klik untuk memilih fokus</small>
+              <small>Pilih fokus</small>
             </div>
 
             <div class="goals-list" id="goalsContainer" role="list">
@@ -166,7 +169,7 @@
               <div class="card-title">Sesi Fokus Aktif</div>
               <div class="focus-status-badge">
                 <span class="pulse-indicator" id="liveDot"></span>
-                <span id="liveStatusText">SIAP FOKUS</span>
+                <span id="liveStatusText">SIAP</span>
               </div>
             </div>
 

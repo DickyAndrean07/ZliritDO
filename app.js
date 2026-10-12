@@ -232,7 +232,7 @@
     if ($('statGoalsDone')) $('statGoalsDone').textContent = `${completedGoalsCount} / ${state.goals.length}`;
     if ($('statOverallPct')) $('statOverallPct').textContent = `${overallPct}%`;
 
-    if ($('overviewPercentText')) $('overviewPercentText').textContent = `${overallPct}% tercapai`;
+    if ($('overviewPercentText')) $('overviewPercentText').textContent = `${overallPct}% selesai`;
     if ($('ringPercent')) $('ringPercent').textContent = `${overallPct}%`;
     if ($('overallRing')) {
       $('overallRing').style.background = `conic-gradient(var(--mint) 0% ${overallPct}%, rgba(255, 255, 255, 0.12) ${overallPct}% 100%)`;
@@ -282,7 +282,7 @@
     if ($('mainTimer')) $('mainTimer').classList.toggle('running', state.running);
     if ($('focusTimer')) $('focusTimer').classList.toggle('running', state.running);
 
-    if ($('liveStatusText')) $('liveStatusText').textContent = state.running ? 'FOCUSING NOW' : 'SIAP FOKUS';
+    if ($('liveStatusText')) $('liveStatusText').textContent = state.running ? 'FOKUS' : 'SIAP';
     if ($('liveDot')) $('liveDot').classList.toggle('ticking', state.running);
 
     const startBtnHtml = state.running ? '<span>Ⅱ</span> &nbsp; Sedang Berjalan…' : '<span>▶</span> &nbsp; Mulai Sesi Fokus';
