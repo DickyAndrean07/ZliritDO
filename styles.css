@@ -85,7 +85,7 @@ button {
   height: var(--header-height);
   width: 100%;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow: hidden;
   background: rgba(7, 24, 44, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -109,25 +109,33 @@ button {
 .app-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-decoration: none;
   user-select: none;
+  max-height: 42px;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
 .brand-icon-img {
-  height: 36px;
-  width: auto;
-  border-radius: 10px;
+  width: 34px !important;
+  height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+  border-radius: 8px;
   object-fit: contain;
   display: block;
+  flex-shrink: 0;
 }
 
 .brand-wordmark-img {
-  height: 22px;
-  width: auto;
+  width: auto !important;
+  height: 20px !important;
+  max-width: 115px !important;
+  max-height: 20px !important;
   object-fit: contain;
   display: block;
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -1296,19 +1304,29 @@ button {
   .header-container {
     padding: 0 12px;
   }
+  .app-brand {
+    gap: 6px;
+    max-height: 34px;
+  }
   .brand-text {
     font-size: 18px;
   }
   .brand-icon {
-    width: 32px;
-    height: 32px;
-    font-size: 17px;
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
   }
   .brand-icon-img {
-    height: 28px;
+    width: 26px !important;
+    height: 26px !important;
+    max-width: 26px !important;
+    max-height: 26px !important;
   }
   .brand-wordmark-img {
-    height: 18px;
+    width: auto !important;
+    height: 16px !important;
+    max-width: 88px !important;
+    max-height: 16px !important;
   }
 
   /* Fix 2: Banner & Add Button Stacking */
