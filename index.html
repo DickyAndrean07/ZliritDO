@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#07182c" />
+  <meta name="description" content="ZliritDo — Daily Discipline & Time-Targeted Focus Tracker. Aplikasi produktivitas harian siap pakai untuk membangun kebiasaan disiplin waktu." />
+  <meta name="author" content="Zlirit" />
+  <title>ZliritDo — Daily Discipline &amp; Focus Tracker</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ZliritDo" />
+</head>
+<body>
+
+  <!-- ================= App Header ================= -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="app-brand">
+        <div class="brand-icon" aria-hidden="true">↗</div>
+        <div class="brand-text">zlirit<em>do</em></div>
+      </div>
+
+      <!-- Desktop Nav Pills -->
+      <nav class="desktop-nav" aria-label="Navigasi Utama">
+        <button class="nav-pill active" data-tab="today" type="button">
+          <span>⌂</span> Hari Ini
+        </button>
+        <button class="nav-pill" data-tab="focus" type="button">
+          <span>◉</span> Mode Fokus
+        </button>
+        <button class="nav-pill" data-tab="history" type="button">
+          <span>◷</span> Riwayat &amp; Statistik
+        </button>
+      </nav>
+
+      <!-- Header Status Actions -->
+      <div class="header-actions">
+        <div class="badge-pill" id="headerDateBadge">
+          <span id="headerClock">09:41</span>
+          <span style="opacity:0.4;">|</span>
+          <span id="headerDate">Senin, 12 Okt</span>
+        </div>
+        <div class="badge-pill" id="streakBadge" title="Streak disiplin harian">
+          <span>🔥</span> <b id="streakDays">1</b>d
+        </div>
+        <button class="btn-icon" id="openSettingsBtn" type="button" title="Pengaturan &amp; Data">
+          ⚙️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= App Main Content ================= -->
+  <main class="app-main">
+
+    <!-- VIEW 1: TODAY DASHBOARD -->
+    <section id="viewToday" class="app-view active">
+      <!-- Greeting Banner -->
+      <div class="today-banner">
+        <div>
+          <h1>Disiplin Hari Ini, <span class="mint">Zlirit.</span></h1>
+          <p id="todaySub">Konsistensi kecil setiap hari mengubah segalanya. Jaga komitmen waktu.</p>
+        </div>
+        <button class="btn-primary" id="bannerAddGoalBtn" type="button" style="width: auto; padding: 10px 18px;">
+          <span>＋</span> Tambah Target
+        </button>
+      </div>
+
+      <!-- Quick Metrics Summary -->
+      <div class="quick-stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-info">
+            <small>Fokus Hari Ini</small>
+            <b id="statTotalFocus">0m</b>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-info">
+            <small>Target Selesai</small>
+            <b id="statGoalsDone">0 / 2</b>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-info">
+            <small>Tingkat Capaian</small>
+            <b id="statOverallPct">0%</b>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-Column Dashboard Grid -->
+      <div class="dashboard-grid">
+        <!-- Left Column: Overall Progress & Target List -->
+        <div class="grid-col">
+          <!-- Overall Progress Card -->
+          <article class="card">
+            <div class="card-header">
+              <div class="card-title">
+                Progres Komitmen Hari Ini
+                <span class="tag" id="overviewTag">In Progress</span>
+              </div>
+              <small id="overviewPercentText">0% tercapai</small>
+            </div>
+            <div class="overall-layout">
+              <div class="overall-ring" id="overallRing" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="ring-content">
+                  <b id="ringPercent">0%</b>
+                  <span>Selesai</span>
+                </div>
+              </div>
+              <div class="overall-details">
+                <h3 id="totalTime">0m</h3>
+                <p id="totalTargetLabel">dari 3 jam target terencana</p>
+                <div class="progress-track">
+                  <span id="overallBar"></span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Daily Goals List Card -->
+          <article class="card">
+            <div class="card-header">
+              <div class="card-title">
+                Target Aktivitas
+                <span class="tag" id="goalCountBadge">2 Aktivitas</span>
+              </div>
+              <small>Klik untuk memilih fokus</small>
+            </div>
+
+            <div class="goals-list" id="goalsContainer" role="list">
+              <!-- Dynamically populated goal cards -->
+            </div>
+
+            <button class="btn-add-goal" id="addGoalBtn" type="button">
+              <span>＋</span> Tambah Target Aktivitas Baru
+            </button>
+          </article>
+
+          <!-- Mindful Reminder Quote -->
+          <div class="quote-card">
+            <div class="quote-label">✦ &nbsp; PENGINGAT HARIAN</div>
+            <div class="quote-text" id="dailyQuote">
+              “Disiplin bukan soal menunggu motivasi. Mulai aktivitas, jaga fokus, dan lihat progresmu terkumpul.”
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Active Focus Widget & Recent Sessions -->
+        <div class="grid-col">
+          <!-- Active Focus Widget -->
+          <article class="card active-focus-card">
+            <div class="card-header">
+              <div class="card-title">Sesi Fokus Aktif</div>
+              <div class="focus-status-badge">
+                <span class="pulse-indicator" id="liveDot"></span>
+                <span id="liveStatusText">SIAP FOKUS</span>
+              </div>
+            </div>
+
+            <!-- Active Activity Details -->
+            <div class="active-goal-preview">
+              <div class="active-preview-icon" id="activeIcon">⌨️</div>
+              <div class="active-preview-text">
+                <h4 id="activeName">Belajar Coding</h4>
+                <p id="activeTarget">Target hari ini · 2 jam</p>
+              </div>
+            </div>
+
+            <!-- Timer Box Display -->
+            <div class="timer-box">
+              <div class="timer-display" id="mainTimer" aria-live="polite">00:00:00</div>
+              <div class="timer-stats-grid">
+                <div>
+                  <small>Target Harian</small>
+                  <b id="sessionTarget">02:00:00</b>
+                </div>
+                <div>
+                  <small>Sisa Hari Ini</small>
+                  <b id="sessionLeft">02:00:00</b>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timer Action Buttons -->
+            <div class="timer-button-row">
+              <button class="btn-primary" id="startBtn" type="button">
+                <span>▶</span> Mulai Sesi Fokus
+              </button>
+              <button class="btn-primary btn-secondary" id="stopBtn" type="button">
+                <span>■</span> Selesai &amp; Catat
+              </button>
+            </div>
+          </article>
+
+          <!-- Today's Focus Log Card -->
+          <article class="card">
+            <div class="card-header">
+              <div class="card-title">Log Sesi Hari Ini</div>
+              <small id="sessionCount">0 sesi</small>
+            </div>
+            <div class="history-items-container" id="historyListMini">
+              <!-- Dynamically populated recent sessions -->
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: IMMERSIVE FULLSCREEN FOCUS MODE -->
+    <section id="viewFocus" class="app-view">
+      <div class="focus-view-wrap">
+        <article class="focus-hero-card">
+          <div class="focus-activity-badge">
+            <span id="immersiveIcon">⌨️</span>
+            <span id="immersiveName">Belajar Coding</span>
+          </div>
+
+          <div class="immersive-ring" id="immersiveRing">
+            <div class="timer-display" id="focusTimer">00:00:00</div>
+            <div class="timer-label">WAKTU FOKUS</div>
+          </div>
+
+          <div class="immersive-stats">
+            <div>
+              <small>TARGET HARIAN</small>
+              <b id="immersiveTarget">02:00:00</b>
+            </div>
+            <div>
+              <small>SISA WAKTU</small>
+              <b id="immersiveLeft">02:00:00</b>
+            </div>
+          </div>
+
+          <div class="immersive-actions">
+            <button class="btn-primary" id="immersiveStartBtn" type="button" style="flex: 1.2;">
+              <span>▶</span> Mulai Fokus
+            </button>
+            <button class="btn-primary btn-secondary" id="immersiveStopBtn" type="button" style="flex: 0.8;">
+              <span>■</span> Selesai
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- VIEW 3: HISTORY & ANALYTICS -->
+    <section id="viewHistory" class="app-view">
+      <div class="today-banner">
+        <div>
+          <h1>Riwayat &amp; <span class="mint">Statistik.</span></h1>
+          <p>Catatan sesi disiplin harian dan waktu yang telah kamu curahkan.</p>
+        </div>
+        <button class="btn-primary btn-secondary" id="resetDayBtn" type="button" style="width: auto;">
+          🔄 Mulai Hari Baru
+        </button>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <div class="card-title" style="margin-bottom: 12px;">Akumulasi Waktu Aktivitas</div>
+          <div id="breakdownContainer" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Breakdown bars -->
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="card-title" style="margin-bottom: 12px;">Ringkasan Konsistensi</div>
+          <div style="font-size: 13px; color: #bed2e2; line-height: 1.8;">
+            <div>🔥 <b>Streak Disiplin:</b> <span id="analyticsStreak">1</span> Hari berturut-turut</div>
+            <div>⏱️ <b>Total Sesi Tercatat:</b> <span id="analyticsTotalSessions">0</span> Sesi</div>
+            <div>📊 <b>Status Hari Ini:</b> <span id="analyticsStatus" style="color: var(--mint);">Aktif</span></div>
+          </div>
+        </div>
+      </div>
+
+      <article class="card">
+        <div class="card-header">
+          <div class="card-title">Daftar Lengkap Sesi Fokus</div>
+          <small id="fullHistoryCount">0 Sesi</small>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Aktivitas</th>
+                <th>Durasi</th>
+                <th>Catatan</th>
+                <th>Waktu</th>
+              </tr>
+            </thead>
+            <tbody id="fullHistoryTableBody">
+              <!-- Dynamically populated table rows -->
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- ================= Mobile Bottom Navigation ================= -->
+  <nav class="app-bottom-nav" aria-label="Navigasi Bawah">
+    <button class="bottom-nav-btn active" data-tab="today" type="button">
+      <span class="icon">⌂</span>
+      <span>Hari Ini</span>
+    </button>
+    <button class="bottom-nav-btn" data-tab="focus" type="button">
+      <span class="icon">◉</span>
+      <span>Fokus</span>
+    </button>
+    <button class="bottom-nav-btn" data-tab="history" type="button">
+      <span class="icon">◷</span>
+      <span>Riwayat</span>
+    </button>
+  </nav>
+
+  <!-- ================= Modal: Tambah Target Baru ================= -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h3 id="modalTitle">Tambah Target Aktivitas</h3>
+      <p>Buat komitmen waktu yang jelas untuk harimu. Lawan rasa malas dengan target nyata.</p>
+      
+      <label class="field" for="goalNameInput">Nama Aktivitas</label>
+      <input id="goalNameInput" placeholder="Contoh: Belajar Next.js / Membaca buku" maxlength="36" autocomplete="off" />
+
+      <label class="field" for="goalHoursInput">Target Durasi Minimal (Jam)</label>
+      <input id="goalHoursInput" type="number" min="0.25" max="12" step="0.25" value="1" />
+
+      <label class="field">Pilih Ikon Aktivitas</label>
+      <div class="icon-selector" id="iconSelector">
+        <div class="icon-opt selected" data-icon="⌨️">⌨️</div>
+        <div class="icon-opt" data-icon="🏃">🏃</div>
+        <div class="icon-opt" data-icon="📚">📚</div>
+        <div class="icon-opt" data-icon="🎨">🎨</div>
+        <div class="icon-opt" data-icon="🧘">🧘</div>
+        <div class="icon-opt" data-icon="✍️">✍️</div>
+        <div class="icon-opt" data-icon="🎸">🎸</div>
+        <div class="icon-opt" data-icon="💡">💡</div>
+        <div class="icon-opt" data-icon="🎯">🎯</div>
+        <div class="icon-opt" data-icon="💧">💧</div>
+        <div class="icon-opt" data-icon="🚀">🚀</div>
+        <div class="icon-opt" data-icon="⚡">⚡</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary btn-secondary" id="cancelModal" type="button">Batal</button>
+        <button class="btn-primary" id="saveGoal" type="button">Simpan Target</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Modal: Pengaturan & Manajemen Data ================= -->
+  <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal">
+      <h3 id="settingsTitle">Pengaturan &amp; Data</h3>
+      <p>Kelola data aplikasi lokal browser dan preferensi kamu.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+        <label style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #c4d7e6;">
+          <span>Suara Audio Chime (Start/Finish)</span>
+          <input type="checkbox" id="soundToggle" checked style="width: 20px; height: 20px; accent-color: var(--mint);" />
+        </label>
+        
+        <div style="height: 1px; background: var(--line);"></div>
+
+        <button class="btn-primary btn-secondary" id="exportDataBtn" type="button" style="font-size: 12px; padding: 10px;">
+          📥 Backup Data ke JSON
+        </button>
+
+        <button class="btn-primary btn-secondary" id="resetAllDataBtn" type="button" style="font-size: 12px; padding: 10px; color: var(--danger); border-color: rgba(255,94,120,0.3);">
+          🗑️ Reset Semua Data Aplikasi
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" id="closeSettingsBtn" type="button">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Application Engine -->
+  <script src="app.js"></script>
+</body>
+</html>
