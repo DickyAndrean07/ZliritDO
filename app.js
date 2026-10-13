@@ -596,6 +596,8 @@
     const authLabel = $('userAuthLabel');
     const bannerUsername = $('bannerUsername');
     const profileUsernameDisplay = $('profileUsernameDisplay');
+    const mobileAuthIcon = $('mobileBottomAuthIcon');
+    const mobileAuthLabel = $('mobileBottomAuthLabel');
 
     if (user && user.username) {
       if (authBtn) authBtn.classList.add('logged-in');
@@ -603,12 +605,16 @@
       if (authLabel) authLabel.textContent = user.username;
       if (bannerUsername) bannerUsername.textContent = `${user.username}.`;
       if (profileUsernameDisplay) profileUsernameDisplay.textContent = user.username;
+      if (mobileAuthIcon) mobileAuthIcon.textContent = '⚡';
+      if (mobileAuthLabel) mobileAuthLabel.textContent = user.username;
     } else {
       if (authBtn) authBtn.classList.remove('logged-in');
       if (authIcon) authIcon.textContent = '👤';
       if (authLabel) authLabel.textContent = 'Masuk';
       if (bannerUsername) bannerUsername.textContent = 'Zlirit.';
       if (profileUsernameDisplay) profileUsernameDisplay.textContent = 'Pengguna';
+      if (mobileAuthIcon) mobileAuthIcon.textContent = '👤';
+      if (mobileAuthLabel) mobileAuthLabel.textContent = 'Akun';
     }
   };
 
@@ -818,24 +824,31 @@
     });
 
     // User Auth & Profile Modal Controls
+    const triggerAuth = (e) => {
+      if (e) {
+        e.preventDefault();
+      }
+      if (state.currentUser) {
+        openProfileModal();
+      } else {
+        openAuthModal('login');
+      }
+    };
+
     if ($('userAuthBtn')) {
-      $('userAuthBtn').addEventListener('click', () => {
-        if (state.currentUser) {
-          openProfileModal();
-        } else {
-          openAuthModal('login');
-        }
-      });
+      $('userAuthBtn').addEventListener('click', triggerAuth);
+      $('userAuthBtn').addEventListener('touchend', triggerAuth, { passive: false });
+    }
+
+    if ($('mobileBottomAuthBtn')) {
+      $('mobileBottomAuthBtn').addEventListener('click', triggerAuth);
+      $('mobileBottomAuthBtn').addEventListener('touchend', triggerAuth, { passive: false });
     }
 
     if ($('settingsAuthBtn')) {
-      $('settingsAuthBtn').addEventListener('click', () => {
+      $('settingsAuthBtn').addEventListener('click', (e) => {
         closeSettings();
-        if (state.currentUser) {
-          openProfileModal();
-        } else {
-          openAuthModal('login');
-        }
+        triggerAuth(e);
       });
     }
 

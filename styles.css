@@ -1301,6 +1301,13 @@ button {
   #headerDateBadge {
     display: none !important;
   }
+  .header-actions {
+    gap: 6px !important;
+  }
+  .user-auth-btn {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
   .header-container {
     padding: 0 12px;
   }
@@ -1598,9 +1605,20 @@ button {
   padding: 6px 12px;
   border-radius: 999px;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 55;
 }
 
-.user-auth-btn:hover {
+.user-auth-btn * {
+  pointer-events: none;
+}
+
+.user-auth-btn:hover,
+.user-auth-btn:active {
   background: rgba(98, 237, 189, 0.18);
   border-color: var(--mint);
   transform: translateY(-1px);
