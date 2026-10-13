@@ -828,6 +828,17 @@
       });
     }
 
+    if ($('settingsAuthBtn')) {
+      $('settingsAuthBtn').addEventListener('click', () => {
+        closeSettings();
+        if (state.currentUser) {
+          openProfileModal();
+        } else {
+          openAuthModal('login');
+        }
+      });
+    }
+
     if ($('authTabLogin')) $('authTabLogin').addEventListener('click', () => switchAuthTab('login'));
     if ($('authTabRegister')) $('authTabRegister').addEventListener('click', () => switchAuthTab('register'));
     if ($('authSubmitBtn')) $('authSubmitBtn').addEventListener('click', handleAuthSubmit);
