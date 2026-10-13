@@ -78,12 +78,14 @@
     logs: [],
     streak: 1,
     lastActiveDate: new Date().toISOString().split('T')[0],
-    soundEnabled: true
+    soundEnabled: true,
+    currentUser: null
   };
 
   let tickerInterval = null;
   let selectedModalIcon = '⌨️';
   let activeTab = 'today';
+  let authCurrentTab = 'login'; // 'login' | 'register'
 
   // --- Persistence Handlers ---
   const STORAGE_KEY = 'zliritdo_prod_v1';
@@ -500,6 +502,22 @@
     saveState();
     renderUI();
     showToast(`🎉 ${formatShort(elapsed)} tercatat untuk ${activeGoal.name}. Hebat!`);
+
+    // Sinkronkan ke Supabase Cloud jika pengguna sedang login
+    if (state.currentUser && window.ZliritDB && window.ZliritDB.isAvailable) {
+      window.ZliritDB.addFocusLog(state.currentUser.id, {
+        goalId: activeGoal.id,
+        name: activeGoal.name,
+        duration: elapsed,
+        timestamp: Date.now()
+      });
+      window.ZliritDB.saveGoals(state.currentUser.id, state.goals);
+      window.ZliritDB.saveUserStats(state.currentUser.id, state.currentUser.username, {
+        streak: state.streak,
+        lastActiveDate: state.lastActiveDate,
+        soundEnabled: state.soundEnabled
+      });
+    }
   };
 
   // --- Modal: Tambah Target Baru ---
@@ -553,6 +571,11 @@
     closeModal();
     renderUI();
     showToast(`Target baru "${name}" berhasil ditambahkan! 🚀`);
+
+    // Simpan target baru ke cloud Supabase
+    if (state.currentUser && window.ZliritDB && window.ZliritDB.isAvailable) {
+      window.ZliritDB.saveGoals(state.currentUser.id, state.goals);
+    }
   };
 
   // --- Settings Modal ---
@@ -563,6 +586,188 @@
 
   const closeSettings = () => {
     $('settingsModal').classList.remove('show');
+  };
+
+  // --- Auth & Supabase Cloud Handlers ---
+  const updateAuthUI = () => {
+    const user = state.currentUser;
+    const authBtn = $('userAuthBtn');
+    const authIcon = $('userAuthIcon');
+    const authLabel = $('userAuthLabel');
+    const bannerUsername = $('bannerUsername');
+    const profileUsernameDisplay = $('profileUsernameDisplay');
+
+    if (user && user.username) {
+      if (authBtn) authBtn.classList.add('logged-in');
+      if (authIcon) authIcon.textContent = '⚡';
+      if (authLabel) authLabel.textContent = user.username;
+      if (bannerUsername) bannerUsername.textContent = `${user.username}.`;
+      if (profileUsernameDisplay) profileUsernameDisplay.textContent = user.username;
+    } else {
+      if (authBtn) authBtn.classList.remove('logged-in');
+      if (authIcon) authIcon.textContent = '👤';
+      if (authLabel) authLabel.textContent = 'Masuk';
+      if (bannerUsername) bannerUsername.textContent = 'Zlirit.';
+      if (profileUsernameDisplay) profileUsernameDisplay.textContent = 'Pengguna';
+    }
+  };
+
+  const openAuthModal = (defaultTab = 'login') => {
+    authCurrentTab = defaultTab;
+    const modal = $('authModal');
+    if (!modal) return;
+    modal.classList.add('show');
+    switchAuthTab(authCurrentTab);
+    const msgBox = $('authMsgBox');
+    if (msgBox) {
+      msgBox.style.display = 'none';
+      msgBox.textContent = '';
+      msgBox.className = 'auth-msg-box';
+    }
+    const userInput = $('authUsernameInput');
+    if (userInput) {
+      userInput.value = '';
+      userInput.focus();
+    }
+    if ($('authPasswordInput')) $('authPasswordInput').value = '';
+  };
+
+  const closeAuthModal = () => {
+    const modal = $('authModal');
+    if (modal) modal.classList.remove('show');
+  };
+
+  const switchAuthTab = (tab) => {
+    authCurrentTab = tab;
+    const btnLogin = $('authTabLogin');
+    const btnRegister = $('authTabRegister');
+    const submitBtn = $('authSubmitBtn');
+    const title = $('authModalTitle');
+
+    if (btnLogin) btnLogin.classList.toggle('active', tab === 'login');
+    if (btnRegister) btnRegister.classList.toggle('active', tab === 'register');
+
+    if (tab === 'login') {
+      if (submitBtn) submitBtn.textContent = 'Masuk Sekarang';
+      if (title) title.textContent = 'Masuk ke Akun';
+    } else {
+      if (submitBtn) submitBtn.textContent = 'Daftar Akun Baru';
+      if (title) title.textContent = 'Buat Akun Baru';
+    }
+  };
+
+  const showAuthMsg = (msg, isError = true) => {
+    const msgBox = $('authMsgBox');
+    if (!msgBox) return;
+    msgBox.textContent = msg;
+    msgBox.className = `auth-msg-box ${isError ? 'error' : 'success'}`;
+    msgBox.style.display = 'block';
+  };
+
+  const openProfileModal = () => {
+    const modal = $('profileModal');
+    if (!modal) return;
+    modal.classList.add('show');
+    updateAuthUI();
+  };
+
+  const closeProfileModal = () => {
+    const modal = $('profileModal');
+    if (modal) modal.classList.remove('show');
+  };
+
+  const syncWithCloud = async () => {
+    if (!state.currentUser || !window.ZliritDB || !window.ZliritDB.isAvailable) return;
+    try {
+      const cloudData = await window.ZliritDB.loadUserData(state.currentUser.id);
+      if (cloudData && cloudData.hasData) {
+        if (cloudData.goals && cloudData.goals.length > 0) {
+          state.goals = cloudData.goals;
+        }
+        if (cloudData.logs) {
+          state.logs = cloudData.logs;
+        }
+        if (cloudData.stats) {
+          if (typeof cloudData.stats.streak === 'number') state.streak = cloudData.stats.streak;
+          if (cloudData.stats.lastActiveDate) state.lastActiveDate = cloudData.stats.lastActiveDate;
+          if (typeof cloudData.stats.soundEnabled === 'boolean') state.soundEnabled = cloudData.stats.soundEnabled;
+        }
+        saveState();
+        renderUI();
+      } else {
+        // First-time sync: push initial local data to Supabase
+        await window.ZliritDB.saveGoals(state.currentUser.id, state.goals);
+        await window.ZliritDB.saveUserStats(state.currentUser.id, state.currentUser.username, {
+          streak: state.streak,
+          lastActiveDate: state.lastActiveDate,
+          soundEnabled: state.soundEnabled
+        });
+      }
+    } catch (err) {
+      console.warn('Sync cloud warning:', err);
+    }
+  };
+
+  const handleAuthSubmit = async () => {
+    const username = $('authUsernameInput').value.trim();
+    const password = $('authPasswordInput').value;
+
+    if (!username) {
+      showAuthMsg('Harap masukkan username Anda.');
+      return;
+    }
+    if (!password) {
+      showAuthMsg('Harap masukkan password Anda.');
+      return;
+    }
+
+    const submitBtn = $('authSubmitBtn');
+    const origText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Memproses...';
+
+    try {
+      if (authCurrentTab === 'login') {
+        const res = await window.ZliritAuth.login(username, password);
+        state.currentUser = {
+          id: res.user.id,
+          username: res.username
+        };
+        updateAuthUI();
+        closeAuthModal();
+        showToast(`Selamat datang kembali, ${res.username}! 🚀`);
+        await syncWithCloud();
+      } else {
+        const res = await window.ZliritAuth.register(username, password);
+        state.currentUser = {
+          id: res.user.id,
+          username: res.username
+        };
+        updateAuthUI();
+        closeAuthModal();
+        showToast(`Akun ${res.username} berhasil dibuat! Data otomatis tersinkron ke cloud.`);
+        await syncWithCloud();
+      }
+    } catch (err) {
+      showAuthMsg(err.message || 'Terjadi kesalahan saat memproses akun.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = origText;
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm('Yakin ingin keluar dari akun?')) {
+      try {
+        await window.ZliritAuth.logout();
+      } catch (e) {
+        console.warn('Logout error:', e);
+      }
+      state.currentUser = null;
+      updateAuthUI();
+      closeProfileModal();
+      showToast('Berhasil keluar dari akun.');
+    }
   };
 
   // --- Event Listeners Setup ---
@@ -612,6 +817,59 @@
       });
     });
 
+    // User Auth & Profile Modal Controls
+    if ($('userAuthBtn')) {
+      $('userAuthBtn').addEventListener('click', () => {
+        if (state.currentUser) {
+          openProfileModal();
+        } else {
+          openAuthModal('login');
+        }
+      });
+    }
+
+    if ($('authTabLogin')) $('authTabLogin').addEventListener('click', () => switchAuthTab('login'));
+    if ($('authTabRegister')) $('authTabRegister').addEventListener('click', () => switchAuthTab('register'));
+    if ($('authSubmitBtn')) $('authSubmitBtn').addEventListener('click', handleAuthSubmit);
+    if ($('closeAuthModalBtn')) $('closeAuthModalBtn').addEventListener('click', closeAuthModal);
+    if ($('authModal')) {
+      $('authModal').addEventListener('click', (e) => {
+        if (e.target === $('authModal')) closeAuthModal();
+      });
+    }
+
+    if ($('authUsernameInput')) {
+      $('authUsernameInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAuthSubmit();
+      });
+    }
+    if ($('authPasswordInput')) {
+      $('authPasswordInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAuthSubmit();
+      });
+    }
+
+    if ($('syncNowBtn')) {
+      $('syncNowBtn').addEventListener('click', async () => {
+        const btn = $('syncNowBtn');
+        const orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Menyinkronkan...';
+        await syncWithCloud();
+        btn.disabled = false;
+        btn.textContent = orig;
+        showToast('Data berhasil disinkronkan ke cloud Supabase! 🟢');
+      });
+    }
+
+    if ($('logoutBtn')) $('logoutBtn').addEventListener('click', handleLogout);
+    if ($('closeProfileModalBtn')) $('closeProfileModalBtn').addEventListener('click', closeProfileModal);
+    if ($('profileModal')) {
+      $('profileModal').addEventListener('click', (e) => {
+        if (e.target === $('profileModal')) closeProfileModal();
+      });
+    }
+
     // Settings actions
     if ($('openSettingsBtn')) $('openSettingsBtn').addEventListener('click', openSettings);
     if ($('closeSettingsBtn')) $('closeSettingsBtn').addEventListener('click', closeSettings);
@@ -652,10 +910,12 @@
             logs: [],
             streak: 1,
             lastActiveDate: new Date().toISOString().split('T')[0],
-            soundEnabled: true
+            soundEnabled: true,
+            currentUser: null
           };
           saveState();
           closeSettings();
+          updateAuthUI();
           renderUI();
           showToast('Semua data berhasil direset ke pengaturan awal.');
         }
@@ -671,6 +931,15 @@
           saveState();
           renderUI();
           showToast('Hari baru dimulai! Selamat berjuang mencapai target harimu! 🔥');
+
+          if (state.currentUser && window.ZliritDB && window.ZliritDB.isAvailable) {
+            window.ZliritDB.saveGoals(state.currentUser.id, state.goals);
+            window.ZliritDB.saveUserStats(state.currentUser.id, state.currentUser.username, {
+              streak: state.streak,
+              lastActiveDate: state.lastActiveDate,
+              soundEnabled: state.soundEnabled
+            });
+          }
         }
       });
     }
@@ -698,12 +967,26 @@
   };
 
   // --- App Initialization ---
-  const initApp = () => {
+  const initApp = async () => {
     loadState();
     updateSystemClock();
     setInterval(updateSystemClock, 10000);
     initListeners();
     renderUI();
+
+    // Check existing Supabase session
+    if (window.ZliritAuth && window.ZliritAuth.isAvailable) {
+      try {
+        const user = await window.ZliritAuth.getCurrentUser();
+        if (user) {
+          state.currentUser = user;
+          updateAuthUI();
+          await syncWithCloud();
+        }
+      } catch (err) {
+        console.warn('Cek sesi pengguna:', err);
+      }
+    }
   };
 
   if (document.readyState === 'loading') {

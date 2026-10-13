@@ -1,0 +1,8 @@
+# Agent local skills & IDE configs
+.agents/
+skills-lock.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+*.log

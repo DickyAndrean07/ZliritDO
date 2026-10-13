@@ -1580,3 +1580,141 @@ button {
     transition: none !important;
   }
 }
+
+/* ========================================================
+   SUPABASE AUTH & USER PROFILE STYLES
+   ======================================================== */
+.user-auth-btn {
+  cursor: pointer;
+  background: rgba(98, 237, 189, 0.08);
+  border: 1px solid rgba(98, 237, 189, 0.25);
+  color: #d8f5ec;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.user-auth-btn:hover {
+  background: rgba(98, 237, 189, 0.18);
+  border-color: var(--mint);
+  transform: translateY(-1px);
+}
+
+.user-auth-btn.logged-in {
+  background: rgba(43, 195, 255, 0.12);
+  border-color: rgba(43, 195, 255, 0.4);
+  color: #cbeeff;
+}
+
+.auth-modal-box,
+.profile-modal-box {
+  max-width: 420px;
+}
+
+.auth-header,
+.profile-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.auth-icon-badge,
+.profile-avatar {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, rgba(98, 237, 189, 0.2), rgba(43, 195, 255, 0.2));
+  border: 1.5px solid rgba(98, 237, 189, 0.4);
+  box-shadow: 0 0 20px rgba(98, 237, 189, 0.15);
+}
+
+.auth-tab-switch {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: #9db2c7;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.auth-tab-btn.active {
+  background: var(--mint);
+  color: #051424;
+  box-shadow: 0 2px 8px rgba(98, 237, 189, 0.3);
+}
+
+.auth-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-msg-box {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.auth-msg-box.error {
+  background: rgba(255, 94, 120, 0.15);
+  border: 1px solid rgba(255, 94, 120, 0.4);
+  color: #ff9ea8;
+}
+
+.auth-msg-box.success {
+  background: rgba(98, 237, 189, 0.15);
+  border: 1px solid rgba(98, 237, 189, 0.4);
+  color: #8bfcd6;
+}
+
+.auth-modal-footer {
+  text-align: center;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-modal-footer small {
+  color: #7d96af;
+  font-size: 11px;
+}
+
+.cloud-status-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(98, 237, 189, 0.1);
+  border: 1px solid rgba(98, 237, 189, 0.3);
+  color: var(--mint);
+  font-size: 11px;
+  font-weight: 600;
+}
+
